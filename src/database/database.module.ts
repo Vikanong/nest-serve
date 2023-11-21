@@ -9,8 +9,8 @@ export class DatabaseModule {
             imports: [
                 TypeOrmModule.forRoot({
                     type: 'mysql',
-                    host: 'mysql-container',
-                    // host: '192.168.110.207',
+                    // host: 'mysql-container',
+                    host: '192.168.110.207',
                     port: 3306,
                     username: 'root',
                     password: '123456',

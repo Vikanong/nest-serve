@@ -1,55 +1,228 @@
-<!-- index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nest Project Example</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nest Example</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --theme-color: #e0234e;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+            user-select: none;
+        }
+
+        .title img {
+            width: 80px;
+        }
+
+        .title h1 {
+            color: var(--theme-color);
+            margin-left: 20px;
+            font-size: 36px;
+        }
+
+        .operate {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .operate button {
+            width: 120px;
+            background: var(--theme-color);
+            color: white;
+            line-height: 34px;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 0 10px;
+            cursor: pointer;
+            border: 3px solid var(--theme-color);
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .operate button:hover {
+            background: white;
+            color: var(--theme-color);
+            transition: 0.3s;
+        }
+
+        #list {
+            width: 100%;
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 200px);
+            grid-gap: 20px;
+            justify-content: center;
+        }
+
+        .item {
+            background: #fff6f8;
+            border-radius: 8px;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            font-weight: 500;
+            color: #e0234e;
+            font-size: 14px;
+        }
+
+        .item div {
+            margin: 5px 0;
+        }
+
+        .item .item_buttons {
+            display: flex;
+        }
+
+        .item .item_buttons button {
+            background: #ffe1e1;
+            color: var(--theme-color);
+            border: 1px solid #ffffff;
+            border-radius: 4px;
+            height: 26px;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .item .item_buttons button:hover {
+            background: var(--theme-color);
+            color: white;
+            transition: 0.3s;
+        }
+    </style>
 </head>
 
 <body>
-  <h1>Nest Project Example</h1>
+    <div class="main">
+        <div class="title">
+            <img src="logo.svg" alt="">
+            <h1>Nest Example</h1>
+        </div>
 
-  <button onclick="getData()">Get Data from Nest API</button>
+        <div class="operate">
+            <button onclick="getData()">Get User</button>
+            <button onclick="addData()">Add User</button>
+        </div>
+        <div id="list"></div>
+    </div>
+    <script>
+        const generateName = () => {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            for (let i = 0; i < 4; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
 
-  <button onclick="postData()">Post Data from Nest API</button>
+        async function getData() {
+            try {
+                const response = await fetch('/api/user');
+                const result = await response.json();
+                const list = result.data;
+                const list_dom = document.getElementById('list');
+                list_dom.innerHTML = '';
+                if (list) {
+                    list.map(item => {
+                        const div = document.createElement('div');
+                        div.className = 'item';
+                        div.innerHTML = `
+                            <div class="item_id">
+                                ID: ${item.id}
+                            </div>
+                            <div class="item_name">
+                                Name: ${item.user}
+                            </div>
+                            <div class="item_time">
+                                Create: ${item.create_time}
+                            </div>
+                            <div class="item_buttons">
+                                <button onclick="updateData(${item.id})">Update</button>
+                                <button onclick="deleteData(${item.id})">Delete</button>
+                            </div>`;
+                        list_dom.appendChild(div);
+                    })
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
 
-  <div id="result"></div>
+        async function addData() {
+            const url = '/api/user/add';
+            const data = {
+                user: `USER-${generateName()}`
+            };
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    },
+                    body: JSON.stringify(data),
+                });
+                getData()
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
 
-  <script>
-    async function getData() {
-      try {
-        const response = await fetch('/api/user'); // Replace with your Nest API endpoint
-        const data = await response.json();
-        document.getElementById('result').innerText = JSON.stringify(data, null, 2);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    }
+        async function updateData(id) {
+            const url = '/api/user/update';
+            const data = {
+                id,
+                user: `USER-${generateName()}`
+            };
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    },
+                    body: JSON.stringify(data),
+                });
+                getData()
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
 
-    async function postData() {
-      const url = '/api/user/add'; // Replace with your API endpoint
-      const create_time = new Date().getTime();
-      const data = {
-        user: 'test_user1'
-      };
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json;charset=UTF-8',
-          },
-          body: JSON.stringify(data),
-        }); // Replace with your Nest API endpoint
-        const result = await response.json();
-        document.getElementById('result').innerText = JSON.stringify(result, null, 2);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    }
-  </script>
+        async function deleteData(id) {
+            const url = '/api/user/delete';
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    },
+                    body: JSON.stringify({ id }),
+                });
+                getData()
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+    </script>
 </body>
 
 </html>
