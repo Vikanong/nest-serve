@@ -1,5 +1,5 @@
 #!/bin/bash
-docker-compose down
+# docker-compose down
 docker rmi $(docker image ls -q nest-server)
 docker build -t nest-server:1 .
 docker-compose stop nest-server
