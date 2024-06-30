@@ -2,16 +2,21 @@ version: '3.3'
 services:
   nest-server:
     image: nest-server:1
-    # container_name: nest-server
     ports:
       - "8088:3000"
     depends_on:
       - mysql-container
+
   mysql-container:
     image: mysql:latest
-    # container_name: mysql-container
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: test_db
     ports:
       - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql_data:

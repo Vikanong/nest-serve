@@ -10,7 +10,6 @@ export class DatabaseModule {
                 TypeOrmModule.forRoot({
                     type: 'mysql',
                     host: 'mysql-container',
-                    // host: '192.168.110.207',
                     port: 3306,
                     username: 'root',
                     password: '123456',
@@ -18,8 +17,9 @@ export class DatabaseModule {
                     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
                     synchronize: true,
                     extra: {
-                        insecureAuth: true, // 为了向 MySQL 8 发送老的身份验证插件请求
+                        insecureAuth: true,
                     },
+                    driver: require('mysql2'),
                 }),
             ],
         };
