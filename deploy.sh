@@ -9,7 +9,7 @@ fi
 
 # 重新构建 nest-server 镜像
 docker build -t nest-server:1 .
-docker run --name nest-server --network=my-network -p 8088:3000 -d nest-server:1
+docker run -d --name nest-server --network=my-network -p 8088:3000 -d nest-server:1
 
 # # 停止并删除现有的 nest-server 容器
 # docker-compose stop nest-server
