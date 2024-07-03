@@ -218,7 +218,21 @@
                     },
                     body: JSON.stringify(data),
                 });
-                getData()
+                if (!response.ok) {
+                    if (response.status === 409) {
+                        const errorData = await response.json();
+                        console.error('Conflict error:', errorData.message);
+                        alert('Please wait at least 3 seconds before adding another user.');
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Error:', response.status, errorData);
+                        alert('An error occurred while adding the user.');
+                    }
+                    return;
+                }
+                const responseData = await response.json();
+                console.log('User added successfully:', responseData);
+                getData();
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
